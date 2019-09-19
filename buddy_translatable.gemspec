@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = 'Manages translations and sales data fields'
   spec.description   = 'Manages translations and sales data fields'
-  spec.homepage      = ''
+  spec.homepage      = 'https://github.com/owen2345/buddy_translatable'
   spec.license       = 'MIT'
 
   # Specify which files should be added to the gem when it is released.

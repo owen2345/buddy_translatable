@@ -63,7 +63,7 @@ module BuddyTranslatable
       define_method("#{attr}_data") do
         res = self[attr]
         res = new_record? ? { current_key.call => '' } : {} unless res.present?
-        res.with_indifferent_access
+        res.symbolize_keys.with_indifferent_access
       end
 
       define_method(attr) do |**_args|

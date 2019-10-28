@@ -5,7 +5,6 @@ module BuddyTranslatable
     def translatable(*attrs, default_key: :de, available_keys: [])
       available_keys = I18n.available_locales unless available_keys.present?
       attrs.each do |attr|
-        translatable_sanity_check(attr)
         define_translatable_methods(attr, default_key)
         define_translatable_key_methods(attr, available_keys)
       end
@@ -16,15 +15,9 @@ module BuddyTranslatable
         available_keys = BuddyTranslatable.config.available_sales_keys
       end
       attrs.each do |attr|
-        translatable_sanity_check(attr)
         define_translatable_methods(attr, default_key, is_locale: false)
         define_translatable_key_methods(attr, available_keys)
       end
-    end
-
-    def translatable_sanity_check(attr)
-      msg = "no such column '#{attr}' in '#{name}' model"
-      raise ArgumentError, msg unless column_names.include?(attr.to_s)
     end
 
     def define_translatable_methods(attr, default_key, is_locale: true)

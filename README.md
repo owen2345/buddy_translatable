@@ -23,6 +23,7 @@ post.title #=> Hallo
 # Getter using methods
 post.title_en #=> Hello
 post.title_de #=> Hallo
+post.title_for(:de) #=> Hallo
 post.title_data_for(:en) #=> Hello
 post.title_data # => return all data (Hash)
 
@@ -57,6 +58,7 @@ BuddyTranslatable.config.reset_current_sales_key
 # Getter using methods
 post.key_vev #=> vev
 post.key_ebay #=> ebay
+post.key_for(:ebay) #=> ebay
 post.key_data_for(:vev) #=> vev
 post.key_data # => return all data (Hash)
 

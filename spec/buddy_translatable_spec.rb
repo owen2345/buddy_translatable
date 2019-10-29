@@ -13,6 +13,7 @@ RSpec.describe BuddyTranslatable do
 
       it 'get by param locale value' do
         expect(model.title_data_for(:en)).to eq 'en'
+        expect(model.title_for(:en)).to eq 'en'
       end
 
       it 'return current locale by attr name' do
@@ -78,8 +79,9 @@ RSpec.describe BuddyTranslatable do
         expect(model.key_vev).to eq 'vev'
       end
 
-      it 'get by param locale value' do
+      it 'get by param sale_key value' do
         expect(model.key_data_for(:ebay)).to eq 'ebay'
+        expect(model.key_for(:ebay)).to eq 'ebay'
       end
 
       it 'get default key if not exist (defined in model attr)' do

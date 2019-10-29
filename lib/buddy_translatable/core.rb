@@ -50,6 +50,10 @@ module BuddyTranslatable
           value[default_key].presence ||
           value.values.find(&:present?)
       end
+
+      define_method("#{attr}_for") do |key|
+        send("#{attr}_data_for", key)
+      end
     end
 
     def define_translatable_getters(attr, current_key)

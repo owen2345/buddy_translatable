@@ -1,9 +1,10 @@
 # JSON Buddy Translatable
 
-Allows you to store text data in multiple languages or Sales channels. Based on [translateable](https://github.com/olegantonyan/translateable), but with a few differences:
+Allows you to store text data in multiple languages. Based on [translateable](https://github.com/olegantonyan/translateable), but with a few differences:
 
 1. Support for key methods
-2. Support for Sales channels
+2. No extra table dependency
+3. Single attribute
 
 ### Translations
 ```ruby
@@ -37,40 +38,7 @@ post.title_es # => Hallo (return default key if not found)
 # Replace all data
 post.update(title: { en: 'En val', de: 'De val' })
 post.title_en # => En val
-```
-
-### Sales Channels
-```ruby
-class Post < ActiveRecord::Base
-  include BuddyTranslatable
-  sales_datable :key, default_key: :vev
-end
-post = Post.create(key: { vev: 'vev', ebay: 'ebay' })
-
-# getter
-post.key #=> vev # return default key
-BuddyTranslatable.config.current_sales_key = :ebay
-post.key #=> ebay
-
-# you can reset current sales channel by
-BuddyTranslatable.config.reset_current_sales_key
-
-# Getter using methods
-post.key_vev #=> vev
-post.key_ebay #=> ebay
-post.key_for(:ebay) #=> ebay
-post.key_data_for(:vev) #=> vev
-post.key_data # => return all data (Hash)
-
-# Update current sales key (if empty will use default_key) and maintain others
-BuddyTranslatable.config.current_sales_key = :ebay 
-post.update(key: 'Ebay changed')
-post.key_ebay # => Ebay changed
-post.key_vev # => vev
-
-# Replace all data
-post.update(key: { vev: 'vev val', ebay: 'ebay val' })
-post.key_vev # => vev val
+post.title_es # => De val # default_key value is used when not defined
 ```
 
 ## Requirements
@@ -87,12 +55,8 @@ Add this line to your application's Gemfile:
 gem 'buddy_translatable'
 ```
 
-Create initializer:
-```ruby
-# config/initializers/translatable.rb
-BuddyTranslatable.config.available_sales_keys = %i[de ebay]
-I18n.available_locales = %i[de en es]
-```
+Configure your available locales in your rails app, like:
+```I18n.available_locales = %i[de en es]```
 
 And then execute:
 ``` bundle install ```
@@ -104,7 +68,6 @@ class TestModel < ActiveRecord::Base
   include BuddyTranslatable
 
   translatable :title, default_key: :de
-  sales_datable :key, default_key: :vev #, available_keys: [:ebay, :amazon, :vev]
 end
 ```
 

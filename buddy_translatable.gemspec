@@ -11,8 +11,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Owen']
   spec.email         = ['owenperedo@gmail.com']
 
-  spec.summary       = 'Manages translations and sales data fields'
-  spec.description   = 'Manages translations and sales data fields'
+  spec.summary       = 'Manages attribute translations translations'
+  spec.description   = 'Manages attribute translations translations'
   spec.homepage      = 'https://github.com/owen2345/buddy_translatable'
   spec.license       = 'MIT'
 

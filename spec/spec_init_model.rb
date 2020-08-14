@@ -40,5 +40,4 @@ class TestModel < ActiveRecord::Base
   include BuddyTranslatable
 
   translatable :title, default_key: :de
-  sales_datable :key, default_key: :vev
 end

@@ -1,0 +1,25 @@
+version: '2'
+
+services:
+  postgres:
+    image: postgres:10.6-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - ${PGPORT:-5432}:5432
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-root}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+
+  test:
+    build: .
+    command: sh -c 'bundle exec rspec'
+    volumes:
+      - .:/app
+      - bundler_gems:/usr/local/bundle/
+    depends_on:
+      - postgres
+
+volumes:
+  bundler_gems:
+  postgres_data:

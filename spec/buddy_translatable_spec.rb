@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe BuddyTranslatable do
+  let(:title) { { en: 'en', de: 'de' } }
+  let(:model) { TestModel.create!(title: title, title_text: title) }
 
-  describe 'translatable' do
-    let(:title) { { en: 'en', de: 'de' } }
-    let(:model) { TestModel.create!(title: title) }
-
+  describe 'when jsonb format' do
     describe 'getters' do
       it 'get by key locale method' do
         expect(model.title_en).to eq 'en'
@@ -64,6 +63,44 @@ RSpec.describe BuddyTranslatable do
         expect(model.reload.title_en).to eq new_en_val
         expect(model.reload.title_de).to eq de_val
       end
+
+      it 'sets values for a specific locale' do
+        de_value = 'custom de value'
+        model.update!(title_de: de_value)
+        expect(model.title_de).to eq(de_value)
+      end
+    end
+  end
+
+  describe 'when text attributes' do
+    let(:en_value) { 'En Value' }
+
+    it 'returns correct value when getting value' do
+      expect(model.title_text_en).to eq 'en'
+    end
+
+    it 'sets correct value when setting value' do
+      I18n.locale = :en
+      model.title_text = en_value
+      expect(model.title_text).to eq en_value
+    end
+
+    it 'sets correct data value when setting data' do
+      data = { en: 'custom en value', de: 'Custom de value' }
+      model.title_text_data = data
+      expect(model.title_text_data).to eq data
+    end
+
+    it 'returns correct data' do
+      model.reload
+      expect(model.title_text_data).to eq title
+    end
+
+    it 'returns correct data when saved and reloaded' do
+      I18n.locale = :en
+      model.update!(title_text: en_value)
+      model.reload
+      expect(model.title_text_data[:en]).to eq en_value
     end
   end
 end

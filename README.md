@@ -5,6 +5,7 @@ Allows you to store text data in multiple languages. Based on [translateable](ht
 1. Support for key methods
 2. No extra table dependency
 3. Single attribute
+4. Support for `jsonb` and `text` format attributes
 
 ### Translations
 ```ruby
@@ -34,6 +35,8 @@ post.update(title: 'Hello changed')
 post.title_en # => Hello changed
 post.title_de # => Hallo
 post.title_es # => Hallo (return default key if not found)
+post.title_es = 'Hola' # => Set value for a specific locale
+post.title_es # => Hola (return defined value)
 
 # Replace all data
 post.update(title: { en: 'En val', de: 'De val' })
@@ -42,8 +45,6 @@ post.title_es # => De val # default_key value is used when not defined
 ```
 
 ## Requirements
-
-- PostgreSQL >= 9.4
 - ActiveRecord >= 4.2
 - I18n
 
@@ -52,7 +53,7 @@ post.title_es # => De val # default_key value is used when not defined
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'buddy_translatable'
+gem 'buddy_translatable', '>= 1.0'
 ```
 
 Configure your available locales in your rails app, like:
@@ -79,13 +80,16 @@ class AddTitleToPosts < ActiveRecord::Migration
   def change
     add_column :posts, :title, :jsonb, null: false, default: {}
     add_column :posts, :key, :jsonb, null: false, default: {}
+    
+    # for databases that does not support jsonb format
+    # add_column :posts, :title, :text, null: false, default: '{}'
   end
 end
 ```
 
 ### Queries
 
-For searching you can use the following concern:
+For searching you can use the following concern (Only `jsonb` format attributes):
 ```ruby
 module JsonbQuerable
   extend ActiveSupport::Concern
@@ -121,8 +125,11 @@ Post.where("title->>'en' = ?", 'hello')
 ```
 
 ## Development
+Run tests with:    
+`docker-compose run test bash -c "rspec"`    
+Check code style:    
+`docker-compose run test bash -c "rubocop"`    
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
 ## Contributing
 
@@ -130,3 +137,4 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/owen23
 
 ## License
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+

@@ -35,6 +35,8 @@ post.update(title: 'Hello changed')
 post.title_en # => Hello changed
 post.title_de # => Hallo
 post.title_es # => Hallo (return default key if not found)
+post.title_es = 'Hola' # => Set value for a specific locale
+post.title_es # => Hola (return defined value)
 
 # Replace all data
 post.update(title: { en: 'En val', de: 'De val' })

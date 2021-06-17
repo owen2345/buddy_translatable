@@ -15,9 +15,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Cancel previous Workflow Actions
-          uses: styfle/cancel-workflow-action@0.6.0
-          with:
-            access_token: ${{ github.token }}
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
       - name: download docker-compose cache
         run: docker-compose pull
       - uses: satackey/action-docker-layer-caching@v0.0.11 # Cache or restore docker cache

@@ -21,7 +21,7 @@ module BuddyTranslatable
       define_method("#{attr}_data=") do |arg|
         data = send("#{attr}_data")
         data = arg.is_a?(Hash) ? arg.symbolize_keys : data.merge(I18n.locale => arg)
-        self[attr] = format == :string ? data.to_json : data
+        self[attr] = %i[string text].include?(format) ? data.to_json : data
       end
 
       define_method("#{attr}=") do |arg|

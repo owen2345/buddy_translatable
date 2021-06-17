@@ -63,6 +63,12 @@ RSpec.describe BuddyTranslatable do
         expect(model.reload.title_en).to eq new_en_val
         expect(model.reload.title_de).to eq de_val
       end
+
+      it 'sets values for a specific locale' do
+        de_value = 'custom de value'
+        model.update!(title_de: de_value)
+        expect(model.title_de).to eq(de_value)
+      end
     end
   end
 

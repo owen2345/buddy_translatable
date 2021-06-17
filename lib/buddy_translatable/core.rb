@@ -17,6 +17,10 @@ module BuddyTranslatable
       define_translatable_getters(attr)
     end
 
+    # Sample:
+    #   model.title_data = { de: 'de val', en: 'en val' } # ==> replace value data
+    #   model.title = { de: 'de val', en: 'en val' } # replace value data
+    #   model.title = 'custom value' # sets new value for current locale
     def define_translatable_setters(attr, format)
       define_method("#{attr}_data=") do |arg|
         data = send("#{attr}_data")
@@ -29,6 +33,9 @@ module BuddyTranslatable
       end
     end
 
+    # Sample:
+    #   model.title_for(:de) # ==> print value for provided locale
+    #   model.title_data_for(:de) # print value for provided locale
     def define_translatable_key_getters(attr, fallback_locale)
       define_method("#{attr}_data_for") do |key|
         value = send("#{attr}_data")
@@ -42,6 +49,9 @@ module BuddyTranslatable
       end
     end
 
+    # Sample:
+    #   model.title_data # ==> print values data
+    #   model.title # print value for current locale
     def define_translatable_getters(attr)
       define_method("#{attr}_data") do
         res = self[attr] || {}
@@ -55,10 +65,18 @@ module BuddyTranslatable
       end
     end
 
+    # Sample:
+    #   model.title_de # ==> "de title"
+    #   model.title_de = "new title" # assign value for specific locale
     def define_translatable_key_methods(attr, locales)
-      locales.each do |key|
-        define_method("#{attr}_#{key}") do
-          send("#{attr}_data_for", key)
+      locales.each do |locale|
+        define_method("#{attr}_#{locale}") do
+          send("#{attr}_data_for", locale)
+        end
+
+        define_method("#{attr}_#{locale}=") do |value|
+          data = send("#{attr}_data").merge(locale => value)
+          send("#{attr}_data=", data)
         end
       end
     end

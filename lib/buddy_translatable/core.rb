@@ -10,12 +10,14 @@ module BuddyTranslatable
       end
     end
 
+    # rubocop:disable Style/RescueModifier
     def define_translatable_methods(attr, fallback_locale)
-      format = respond_to?(:column_types) ? column_types[attr.to_s].type : attribute_types[attr.to_s].type
+      format = (try(:column_types) || try(:attribute_types))[attr.to_s].type rescue :text
       define_translatable_setters(attr, format)
       define_translatable_key_getters(attr, fallback_locale)
       define_translatable_getters(attr)
     end
+    # rubocop:enable Style/RescueModifier
 
     # Sample:
     #   model.title_data = { de: 'de val', en: 'en val' } # ==> replace value data

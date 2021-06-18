@@ -1,3 +1,6 @@
+# 1.0.1 (18-06-2021)
+- Fix: fix error when running rails db:migrate
+
 # 1.0 (17-06-2021)
 - feat: Support for text format attributes (non jsonb attributes)
 - chore: Add container settings

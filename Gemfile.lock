@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    buddy_translatable (1.0.1)
+    buddy_translatable (1.0.2)
       activerecord
       activesupport
       i18n

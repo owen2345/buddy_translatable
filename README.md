@@ -11,7 +11,10 @@ Allows you to store text data in multiple languages. Based on [translateable](ht
 ```ruby
 class Post < ActiveRecord::Base
   include BuddyTranslatable
-  translatable :title, default_key: :de
+  translatable :title
+  # translatable :title, default_key: :de, available_locales: [:de, :en]
+  # default_key: by default use `I18n.default_locale`
+  # available_locales: by default `I18n.available_locales`
 end
 
 post = Post.create(title: { de: 'Hallo', en: 'Hello' })

@@ -2,7 +2,7 @@
 
 module BuddyTranslatable
   module Core
-    def translatable(*attrs, default_key: :en, available_locales: nil)
+    def translatable(*attrs, default_key: I18n.default_locale, available_locales: nil)
       available_locales ||= I18n.available_locales
       attrs.each do |attr|
         define_translatable_methods(attr, default_key.to_sym)

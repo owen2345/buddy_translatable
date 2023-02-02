@@ -1,3 +1,6 @@
+# 1.0.2 (02-02-2023)
+- Fix: fix postgres migration error "current transaction is aborted, commands ignored until end of transaction block"
+
 # 1.0.1 (18-06-2021)
 - Fix: fix error when running rails db:migrate
 

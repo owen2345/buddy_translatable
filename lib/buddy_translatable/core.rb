@@ -12,9 +12,8 @@ module BuddyTranslatable
 
     # rubocop:disable Style/RescueModifier
     def define_translatable_methods(attr, fallback_locale)
-      migrated = ActiveRecord::Base.connection.migration_context.needs_migration?
-      format = migrated ? ((try(:column_types) || try(:attribute_types))[attr.to_s].type rescue :text) : :text
-      define_translatable_setters(attr, format)
+      is_json = BuddyTranslatable.translatable_attr_json?(self, attr)
+      define_translatable_setters(attr, is_json)
       define_translatable_key_getters(attr, fallback_locale)
       define_translatable_getters(attr)
     end

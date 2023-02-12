@@ -103,4 +103,52 @@ RSpec.describe BuddyTranslatable do
       expect(model.title_text_data[:en]).to eq en_value
     end
   end
+
+  describe 'when filtering' do
+    before { TestModel.delete_all }
+
+    describe 'when DB supports jsonb format' do
+      let!(:record1) { TestModel.create!(title: { en: 'Sample EN 1', de: 'Sample DE 1' }) }
+      let!(:record2) { TestModel.create!(title: { en: 'Sample eN 2', de: 'Sample DE 2' }) }
+      let!(:record3) { TestModel.create!(title: { en: 'Example EN 3', de: 'Example DE 3' }) }
+
+      it 'filters for an exact value in any locale' do
+        I18n.locale = :en
+        expect(TestModel.where_title_with('Sample DE 2')).to eq([record2])
+      end
+
+      it 'filters for any locale that contains the provided value' do
+        I18n.locale = :en
+        expect(TestModel.where_title_like('Sample DE')).to match_array([record1, record2])
+      end
+
+      it 'filters for items where current locale has the exact provided value' do
+        I18n.locale = :en
+        expect(TestModel.where_title_eq('Sample EN 1')).to match_array([record1])
+        expect(TestModel.where_title_eq('Sample DE 1')).to eq([])
+      end
+    end
+
+    describe 'when DB does not support jsonb format' do
+      let!(:record1) { TestModel.create!(title_text: { en: 'Sample EN 1', de: 'Sample DE 1' }) }
+      let!(:record2) { TestModel.create!(title_text: { en: 'Sample eN 2', de: 'Sample DE 2' }) }
+      let!(:record3) { TestModel.create!(title_text: { en: 'Example EN 3', de: 'Example DE 3' }) }
+
+      it 'filters for an exact value in any locale' do
+        I18n.locale = :en
+        expect(TestModel.where_title_text_with('Sample DE 2')).to eq([record2])
+      end
+
+      it 'filters for any locale that contains the provided value' do
+        I18n.locale = :en
+        expect(TestModel.where_title_text_like('Sample DE')).to match_array([record1, record2])
+      end
+
+      it 'filters for items where current locale has the exact provided value' do
+        I18n.locale = :en
+        expect(TestModel.where_title_text_eq('Sample EN 1')).to match_array([record1])
+        expect(TestModel.where_title_text_eq('Sample DE 1')).to eq([])
+      end
+    end
+  end
 end

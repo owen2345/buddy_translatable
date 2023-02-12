@@ -10,24 +10,23 @@ module BuddyTranslatable
       end
     end
 
-    # rubocop:disable Style/RescueModifier
     def define_translatable_methods(attr, fallback_locale)
       is_json = BuddyTranslatable.translatable_attr_json?(self, attr)
       define_translatable_setters(attr, is_json)
       define_translatable_key_getters(attr, fallback_locale)
       define_translatable_getters(attr)
+      define_translatable_finders(attr, is_json)
     end
-    # rubocop:enable Style/RescueModifier
 
     # Sample:
     #   model.title_data = { de: 'de val', en: 'en val' } # ==> replace value data
     #   model.title = { de: 'de val', en: 'en val' } # replace value data
     #   model.title = 'custom value' # sets new value for current locale
-    def define_translatable_setters(attr, format)
+    def define_translatable_setters(attr, is_json)
       define_method("#{attr}_data=") do |arg|
         data = send("#{attr}_data")
         data = arg.is_a?(Hash) ? arg.symbolize_keys : data.merge(I18n.locale => arg)
-        self[attr] = %i[string text].include?(format) ? data.to_json : data
+        self[attr] = is_json ? data : data.to_json
       end
 
       define_method("#{attr}=") do |arg|
@@ -41,7 +40,7 @@ module BuddyTranslatable
     def define_translatable_key_getters(attr, fallback_locale)
       define_method("#{attr}_data_for") do |key|
         value = send("#{attr}_data")
-        value[key] ||
+        value[key].presence ||
           value[fallback_locale].presence ||
           value.values.find(&:present?)
       end
@@ -56,10 +55,7 @@ module BuddyTranslatable
     #   model.title # print value for current locale
     def define_translatable_getters(attr)
       define_method("#{attr}_data") do
-        res = self[attr] || {}
-        res = new_record? ? { I18n.locale => '' } : {} unless res.present?
-        res = JSON.parse(res) if res.is_a?(String)
-        res.symbolize_keys
+        BuddyTranslatable.parse_translatable_data(self[attr])
       end
 
       define_method(attr) do |**_args|
@@ -81,6 +77,28 @@ module BuddyTranslatable
           send("#{attr}_data=", data)
         end
       end
+    end
+
+    # Sample string value: {\"en\":\"key-1\"}
+    def define_translatable_finders(attr, is_json) # rubocop:disable Metrics/MethodLength Metrics/AbcSize
+      attr_query = sanitize_sql("#{table_name}.#{attr}")
+      scope :"where_#{attr}_with", (lambda do |value|
+        return where("#{attr_query} like ?", "%\":\"#{value}\"%") unless is_json
+
+        where("EXISTS (SELECT 1 FROM jsonb_each_text(#{attr_query}) j WHERE j.value = ?)", value)
+      end)
+
+      scope :"where_#{attr}_like", (lambda do |value|
+        return where("#{attr_query} like ?", "%#{value}%") unless is_json
+
+        where("EXISTS (SELECT 1 FROM jsonb_each_text(#{attr_query}) j WHERE j.value LIKE ?)", "%#{value}%")
+      end)
+
+      scope :"where_#{attr}_eq", (lambda do |value, locale = I18n.locale|
+        return where("#{attr_query} like ?", "%\"#{locale}\":\"#{value}\"%") unless is_json
+
+        where("#{attr}->>'#{locale}' = ?", value)
+      end)
     end
   end
 end

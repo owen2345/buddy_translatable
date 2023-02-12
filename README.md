@@ -90,41 +90,24 @@ class AddTitleToPosts < ActiveRecord::Migration
 end
 ```
 
-### Queries
+### Filters
 
-For searching you can use the following concern (Only `jsonb` format attributes):
+- Filter for an item with exact value in any locale
 ```ruby
-module JsonbQuerable
-  extend ActiveSupport::Concern
-
-  included do
-    scope :where_jsonb_value, lambda { |attr, value|
-      attr_query = sanitize_sql("#{table_name}.#{attr}")
-      where("EXISTS (SELECT 1 FROM jsonb_each_text(#{attr_query}) j
-                              WHERE j.value = ?)", value)
-    }
-
-    scope :where_jsonb_value_like, lambda { |attr, value, case_sens = false|
-      attr_query = sanitize_sql("#{table_name}.#{attr}")
-      condition = case_sens ? 'j.value LIKE ?' : 'lower(j.value) LIKE lower(?)'
-      where("EXISTS (SELECT 1
-                     FROM jsonb_each_text(#{attr_query}) j
-                     WHERE #{condition})", "%#{value}%")
-    }
-  end
-end
-
-class Post < ActiveRecord::Base
-  #...
-  include JsonbQuerable
-  #...
-end
-
-Post.where_jsonb_value_like(:key, 'ebay')
+# where_<attr_name>_with(value: String)
+Post.where_key_with('ebay')
 ```
-Simple queries:
+
+- Filter for items with any locale that contains the provided value
 ```ruby
-Post.where("title->>'en' = ?", 'hello')
+# where_<attr_name>_like(value: String)
+Post.where_key_like('bay')
+```
+
+- Filter for items where current locale has the exact provided value
+```ruby
+# where_<attr_name>_eq(value: String, locale?: Symbol)
+Post.where_key_eq('ebay')
 ```
 
 ## Development

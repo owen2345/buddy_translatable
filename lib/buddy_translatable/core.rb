@@ -55,7 +55,10 @@ module BuddyTranslatable
     #   model.title # print value for current locale
     def define_translatable_getters(attr)
       define_method("#{attr}_data") do
-        BuddyTranslatable.parse_translatable_data(self[attr])
+        res = self[attr] || {}
+        res = new_record? ? { I18n.locale => '' } : {} unless res.present?
+        res = JSON.parse(res) if res.is_a?(String)
+        res.symbolize_keys
       end
 
       define_method(attr) do |**_args|

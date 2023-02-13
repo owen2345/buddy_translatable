@@ -7,13 +7,6 @@ module BuddyTranslatable
     base.extend BuddyTranslatable::Core
   end
 
-  def self.parse_translatable_data(data)
-    res = data || {}
-    res = {} unless res.present?
-    res = JSON.parse(res) if res.is_a?(String)
-    res.symbolize_keys
-  end
-
   def self.translatable_attr_json?(model_class, attr)
     migrated = ActiveRecord::Base.connection.tables.include?(model_class.table_name)
     return :text unless migrated

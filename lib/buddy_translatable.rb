@@ -8,7 +8,7 @@ module BuddyTranslatable
   end
 
   def self.translatable_attr_json?(model_class, attr)
-    migrated = ActiveRecord::Base.connection.tables.include?(model_class.table_name)
+    migrated = ActiveRecord::Base.connection.tables.include?(model_class.table_name) rescue nil
     return :text unless migrated
 
     columns_data = model_class.try(:column_types) || model_class.try(:attribute_types)

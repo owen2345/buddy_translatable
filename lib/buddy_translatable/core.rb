@@ -32,6 +32,11 @@ module BuddyTranslatable
       define_method("#{attr}=") do |arg|
         send("#{attr}_data=", arg)
       end
+
+      # fixes "input shows original value when form.text_field" which uses value_before_type_cast
+      define_method "#{attr}_came_from_user?" do
+        false
+      end
     end
 
     # Sample:
